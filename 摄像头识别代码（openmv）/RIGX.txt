@@ -1,0 +1,74 @@
+import sensor, image, time,math,pyb
+from pyb import UART,LED
+import json
+import ustruct
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.QVGA)
+sensor.skip_frames(time = 2000)
+sensor.set_auto_gain(False)
+sensor.set_auto_whitebal(False)
+used_roi = (115,55,260,130)//
+green_threshold = (35, 100, -73, -30, 26, 69)//(60, 86, -70, -41, 0, 41)
+yellow_threshold = (52, 100, -31, 2, 39, 90)
+clock = time.clock()
+p4 = pyb.Pin("P4", pyb.Pin.OUT_PP)
+p5 = pyb.Pin("P5", pyb.Pin.OUT_PP)
+p6 = pyb.Pin("P6", pyb.Pin.OUT_PP)
+p4.value(0)
+p5.value(0)
+p6.value(0)
+def find_max(blobs):
+	max_size = 0
+	for blob in blobs:
+		if blob.pixels() > max_size:
+			max_blob=blob
+			max_size = blob.pixels()
+	return max_blob
+green=0
+yellow=0
+double=0
+while(True):
+	img = sensor.snapshot()
+	img.mean(1)
+	img.draw_rectangle(used_roi)
+	green_blob = img.find_blobs([green_threshold],roi=used_roi,area_threshold=130,merge=False)
+	yellow_blob = img.find_blobs([yellow_threshold],roi=used_roi,area_threshold=130,merge=False)
+	com_blob=green_blob+yellow_blob
+	if len(com_blob)>=2 :
+		double=1
+		p6.value(double)
+		print(green,yellow,double)
+	else:
+		double=0
+		p6.value(double)
+		print(green,yellow,double)
+	if (green_blob or yellow_blob):
+		max_b = find_max(com_blob)
+		img.draw_rectangle(max_b[0:4])
+		img.draw_cross(max_b[5], max_b[6])
+		if max_b in green_blob:
+		   green=1
+		   yellow=0
+		   p4.value(green)
+		   p5.value(yellow)
+		   print(green,yellow,double)
+		elif max_b in yellow_blob:
+		   green=0
+		   yellow=1
+		   p4.value(green)
+		   p5.value(yellow)
+		   print(green,yellow,double)
+		else:
+		   green=0
+		   yellow=0
+		   p4.value(green)
+		   p5.value(yellow)
+		   print(green,yellow,double)
+	else:
+		green=0
+		yellow=0
+		p4.value(green)
+		p5.value(yellow)
+		print(green,yellow,double)
+		#print(green,yellow)

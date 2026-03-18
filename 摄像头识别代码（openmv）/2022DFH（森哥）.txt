@@ -1,0 +1,172 @@
+import sensor, image, time,math,pyb
+from pyb import UART,LED
+import json
+import ustruct
+
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.QVGA)
+sensor.skip_frames(time = 2000)
+sensor.set_auto_gain(False) # must be turned off for color tracking
+sensor.set_auto_whitebal(False) # must be turned off for color tracking
+used_roi = (40,0,240,240)                              #好像没用到
+#green_threshold = (0, 100, -66, -22, 2, 46)     #右边
+#red_threshold = (0, 100, 25, 65, -12, 44)
+#yellow_threshold = (0, 100, -14, 36, 29, 79)
+
+green_threshold = (0, 100, -67, -24, 15, 57)     #左边  (0, 100, -67, -26, 11, 53)
+red_threshold = (0, 100, 25, 65, -12, 44)
+yellow_threshold = (0, 100, -14, 36, 29, 79)
+
+
+clock = time.clock()
+
+uart = UART(3,115200)   #定义串口3变量
+uart.init(115200, bits=8, parity=None, stop=1) # init with given parameters
+
+
+
+p3 = pyb.Pin("P3", pyb.Pin.OUT_PP)
+p4 = pyb.Pin("P4", pyb.Pin.OUT_PP)
+p5 = pyb.Pin("P5", pyb.Pin.OUT_PP)
+
+#def find_max(blobs):    #定义寻找色块面积最大的函数
+    #max_size = 0
+
+    #for blob in blobs:
+        #if blob.pixels() > max_size:
+            #max_blob=blob
+            #max_size = blob.pixels()
+
+    #return max_blob
+
+def find_max(blobs):    #定义寻找色块面积最大的函数
+    max_size = 0
+    max_blob = blobs[0]
+    max_size_2 = 0
+    max_blob_2 = blobs[0]
+    for blob in blobs:
+        if blob.pixels() > max_size:
+            max_blob_2 = max_blob
+            max_size_2 = max_size
+            max_blob = blob
+            max_size = blob.pixels()
+        elif blob.pixels() > max_size_2:
+            max_blob_2 = blob
+            max_size_2 = blob.pixels()
+
+
+    return max_blob,max_blob_2
+
+
+
+def sending_data(cx,cy,flag_left,flag_right,speed_ctrl):
+    global uart;
+    #frame=[0x2C,18,cx%0xff,int(cx/0xff),cy%0xff,int(cy/0xff),0x5B];
+    #data = bytearray(frame)
+    data = ustruct.pack("<bbhhhhhb",      #格式为俩个字符俩个短整型(2字节)
+                   0x2C,                      #帧头1
+                   0x12,                      #帧头2
+                   int(cx), # up sample by 4   #数据1
+                   int(cy), # up sample by 4    #数据2
+                   int(flag_left), # up sample by 4    #数据2
+                   int(flag_right), # up sample by 4    #数据2
+                   int(speed_ctrl),
+                   0x5B)
+    uart.write(data);   #必须要传入一个字节数组
+
+
+while(True):
+    clock.tick()
+    img = sensor.snapshot()
+    #green_blob = img.find_blobs([green_threshold],area_threshold=350,roi=used_roi)
+    #red_yellow_blob = img.find_blobs([red_threshold,yellow_threshold],area_threshold=350,roi=used_roi)
+    green_blob = img.find_blobs([green_threshold],area_threshold=130,merge=False,roi=used_roi)
+    red_yellow_blob = img.find_blobs([red_threshold,yellow_threshold],area_threshold=130,merge=False,roi=used_roi)
+#image.find_blobs(thresholds[,roi=Auto,x_stride=2,y_stride=1,invert=False,area_threshold=10,pixels_threshold=10,merge=False,margin=0,threshold_cb=None,merge_cb=None])
+
+    cx=0
+    cy=0
+    cw=0
+    ch=0
+    num=0
+
+    speed_ctrl = 0
+
+    if (green_blob):
+        max_a,max_b = find_max(green_blob)
+        #如果找到了目标颜色
+        cx1=max_a[5]
+        cy1=max_a[6]
+        cw1=max_a[2]
+        ch1=max_a[3]
+
+        cx2=max_b[5]
+        cy2=max_b[6]
+        cw2=max_b[2]
+        ch2=max_b[3]
+        img.draw_rectangle(max_a[0:4]) # rect
+        img.draw_cross(max_a[5], max_a[6]) # cx, cy
+        img.draw_rectangle(max_b[0:4]) # rect
+        img.draw_cross(max_b[5], max_b[6]) # cx, cy
+
+        flag_left =0
+        flag_right =0
+
+        if(cy1<=120 or cy2<=120):
+            flag_right = 1
+        if(cy1>120 or cy2>120 ):
+            flag_left = 1
+
+        #if(red_yellow_blob):
+        #    caizhai1,caizhai2 = find_max(red_yellow_blob)
+        #    img.draw_rectangle(caizhai1[0:4]) # rect
+        #    img.draw_rectangle(caizhai2[0:4]) # rect
+        #    speed_ctrl = 1
+        #else:
+        #    speed_ctrl = 0
+
+
+
+
+        #FH = bytearray([0x2C,0x12,cx,cy,cs,num,0x5B])
+        #sending_data(cx,cy,flag_left,flag_right,speed_ctrl)
+
+        p3.value(flag_left)
+        p4.value(flag_right)
+        p5.value(speed_ctrl)
+
+        #uart.write(FH)
+        print(cx1,cy1,cx2,cy2,flag_left,flag_right)
+        #print(cx_2,cy_2,cw_2,ch_2,num_2)
+    else:
+
+        cx1=0
+        cy1=0
+        cx2=0
+        cy2=0
+
+
+        flag_left = 0
+        flag_right = 0
+
+        #if(red_yellow_blob):
+        #    caizhai1,caizhai2 = find_max(red_yellow_blob)
+        #    img.draw_rectangle(caizhai1[0:4]) # rect
+        #    img.draw_rectangle(caizhai2[0:4]) # rect
+        #    speed_ctrl = 1
+        #else:
+        #    speed_ctrl = 0
+
+
+
+
+        #FH = bytearray([0x2C,0x12,cx,cy,cs,num,0x5B])
+        #sending_data(cx,cy,flag_left,flag_right,speed_ctrl)
+        #uart.write(FH)
+        p3.value(flag_left)
+        p4.value(flag_right)
+        p5.value(speed_ctrl)
+
+        print(cx1,cy1,cx2,cy2,flag_left,flag_right)
+        #print(cx_2,cy_2,cw_2,ch_2,num_2)
