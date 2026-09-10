@@ -1,0 +1,72 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.15
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: S Z, J, LIC=QF82M-X858G-X79RZ-JM7IH-4EUB2-RHHLQ
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Standard  Version: 5.15.0
+Toolchain Path:  D:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.05 update 2 (build 169)
+Assembler:       Armasm.exe V5.05 update 2 (build 169)
+Linker/Locator:  ArmLink.exe V5.05 update 2 (build 169)
+Library Manager: ArmAr.exe V5.05 update 2 (build 169)
+Hex Converter:   FromElf.exe V5.05 update 2 (build 169)
+CPU DLL:         SARMCM3.DLL V5.15.0
+Dialog DLL:      DCM.DLL V1.13.2.0
+Target DLL:      CMSIS_AGDI.dll V1.21.12.0
+Dialog DLL:      TCM.DLL V1.14.5.0
+ 
+<h2>Project:</h2>
+D:\第九届天鹅杯东方红\第九届东方红szj(新陀螺仪跑垄自改版)\USER\Prayer.uvprojx
+Project File Date:  04/28/2024
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.05 update 2 (build 169)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'Prayer'
+compiling control.c...
+..\SYSTEM\CONTROL\control.h(49): warning:  #1295-D: Deprecated declaration Detect_Flag_Mv - give arg types
+  void Detect_Flag_Mv();
+..\SYSTEM\CONTROL\control.h(52): warning:  #1295-D: Deprecated declaration LightStop - give arg types
+  uint8_t LightStop();
+..\HARDWARE\IO\io.h(10): warning:  #1295-D: Deprecated declaration IO_init - give arg types
+  void IO_init();
+..\HARDWARE\IO\io.h(12): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\SYSTEM\CONTROL\control.c(279): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                                                        SpeedL1_Base *= 0.75;
+..\SYSTEM\CONTROL\control.c(280): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                                                        SpeedR1_Base *= 0.75;
+..\SYSTEM\CONTROL\control.c(281): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                                                        SpeedL2_Base *= 0.75;
+..\SYSTEM\CONTROL\control.c(282): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                                                        SpeedR2_Base *= 0.75;
+..\SYSTEM\CONTROL\control.c(129): warning:  #177-D: variable "lamp_1000ms" was declared but never referenced
+      static u16 lamp_1000ms;
+..\SYSTEM\CONTROL\control.c(824): warning:  #550-D: variable "disB_desired" was set but never used
+      static float      disA_desired, disB_desired;//?骶??耄???????
+..\SYSTEM\CONTROL\control.c(979): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          SpeedL1_Base *= 0.4;
+..\SYSTEM\CONTROL\control.c(980): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          SpeedR1_Base *= 0.4;
+..\SYSTEM\CONTROL\control.c(981): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          SpeedL2_Base *= 0.4;
+..\SYSTEM\CONTROL\control.c(982): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          SpeedR2_Base *= 0.4;
+..\SYSTEM\CONTROL\control.c: 14 warnings, 0 errors
+linking...
+Program Size: Code=42864 RO-data=6504 RW-data=724 ZI-data=5620  
+FromELF: creating hex file...
+"..\OBJ\Prayer.axf" - 0 Error(s), 14 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  D:\第九届天鹅杯东方红\第九届东方红szj(新陀螺仪跑垄自改版)\USER\RTE
+  D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+</pre>
+</body>
+</html>
