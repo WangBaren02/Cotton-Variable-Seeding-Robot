@@ -107,7 +107,7 @@ flowchart TD
     ENC[Encoder<br/>换垄位移] --> STATE
     LIGHT[GPIO 光电 / 作物信号] --> STATE
 
-    STATE --> SELECT[Select_PID()<br/>按 flag_step 选择控制器]
+    STATE --> SELECT["Select_PID()<br/>按 flag_step 选择控制器"]
     SELECT --> PID1[航向 PID]
     SELECT --> PID2[距离纠偏 PID]
     SELECT --> PID3[电机速度修正 PID]
@@ -160,17 +160,17 @@ stateDiagram-v2
     S12: 12 停车
 
     S0 --> S1: F1/F2 距离达到垄端条件
-    S1 --> S2: LightStop() 检测到垄端光电事件
-    S2 --> S3: HuanLong() 中 disA 达到目标
-    S3 --> S4: LightStop() 检测到另一侧垄端
-    S4 --> S5: HuanLong() 中 disA 达到目标
-    S5 --> S6: LightStop() 检测到垄端
-    S6 --> S7: HuanLong() 中 disA 达到目标
-    S7 --> S8: LightStop() 检测到另一侧垄端
-    S8 --> S9: HuanLong() 中 disA 达到目标
-    S9 --> S10: LightStop() + 减速延时
-    S10 --> S11: LightStop() 完成最后边界判断
-    S11 --> S12: ChuLong() 中 disB 达到出垄距离
+    S1 --> S2: LightStop 检测到垄端光电事件
+    S2 --> S3: HuanLong 中 disA 达到目标
+    S3 --> S4: LightStop 检测到另一侧垄端
+    S4 --> S5: HuanLong 中 disA 达到目标
+    S5 --> S6: LightStop 检测到垄端
+    S6 --> S7: HuanLong 中 disA 达到目标
+    S7 --> S8: LightStop 检测到另一侧垄端
+    S8 --> S9: HuanLong 中 disA 达到目标
+    S9 --> S10: LightStop + 减速延时
+    S10 --> S11: LightStop 完成最后边界判断
+    S11 --> S12: ChuLong 中 disB 达到出垄距离
     S12 --> [*]
 ```
 
